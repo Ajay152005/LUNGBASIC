@@ -27,7 +27,7 @@ def submit():
     prediction = model.predict(input_data)[0]
 
     # Return the result back to the webpage
-    result = "lol happy having Lung Disease" if prediction == 1 else "You Dont have Lung Disease"
+    result = "I'm sorry, you have a high risk of lung disease." if prediction == 1 else "Good news! You are at low risk for lung disease."
     return jsonify({'result': result})
 
 if __name__ == '__main__':
