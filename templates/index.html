@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lung Disease Diagnosis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f7f7f7;
+            margin: 0;
+        }
+
+        .container {
+            background-color: white;
+            padding: 60px; /* Increased padding */
+            border-radius: 15px; /* Slightly larger radius */
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 500px; /* Increased width */
+        }
+
+        h1 {
+            font-size: 32px; /* Larger heading */
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        #question {
+            font-size: 22px; /* Slightly bigger question text */
+            margin-bottom: 20px;
+            color: #555;
+        }
+
+        #age-input input {
+            width: 120px; /* Increased width */
+            height: 35px; /* Increased height */
+            font-size: 18px; /* Larger font */
+            margin-top: 10px;
+            text-align: center;
+        }
+        
+        #name-input input {
+            width: 120px; /* Increased width */
+            height: 35px; /* Increased height */
+            font-size: 18px; /* Larger font */
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .btn {
+            padding: 15px 30px; /* Larger buttons */
+            font-size: 20px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            margin: 15px;
+            transition: 0.3s ease;
+        }
+
+        .yes {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .no {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        #result {
+            font-size: 24px;
+            margin-top: 30px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Lung Disease Diagnosis</h1>
+
+        <!-- Age Input -->
+        <div id="age-input">
+            <label for="age">Enter your age:</label><br>
+            <input type="number" id="age" name="age" min="0" max="120" required>
+        </div>
+        <div id = "name-input">
+            <label for="name">Enter your name: </label><br>
+            <input type="text" id="name" name="name" max="100">
+        </div>
+
+        <!-- Questions -->
+        <p id="question">Do you have any allergies?</p>
+
+        <!-- Yes/No Buttons -->
+        <button class="btn yes" onclick="submitAnswer(2)">Yes</button>
+        <button class="btn no" onclick="submitAnswer(1)">No</button>
+
+        <!-- Result Display -->
+        <div id="result"></div>
+    </div>
+
+    <script>
+        let answers = {};
+        let currentQuestion = 0;
+
+        const questions = [
+            { key: 'allergy', text: 'Do you have any allergies?' },
+            { key: 'peer_pressure', text: 'Are you under peer pressure?' },
+            { key: 'alcohol_consuming', text: 'Do you consume alcohol?' }
+        ];
+
+        function submitAnswer(answer) {
+            const current = questions[currentQuestion];
+            answers[current.key] = answer;
+
+            // Move to the next question
+            currentQuestion++;
+
+            if (currentQuestion < questions.length) {
+                document.getElementById('question').textContent = questions[currentQuestion].text;
+            } else {
+                // All questions answered, submit the form
+                submitForm();
+            }
+        }
+
+        function submitForm() {
+            const age = document.getElementById('age').value;
+            answers.age = age;
+
+            const formData = new FormData();
+            formData.append('age', answers.age);
+            formData.append('allergy', answers.allergy);
+            formData.append('peer_pressure', answers.peer_pressure);
+            formData.append('alcohol_consuming', answers.alcohol_consuming);
+
+            fetch('/submit', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('question').style.display = 'none';
+                document.querySelector('.yes').style.display = 'none';
+                document.querySelector('.no').style.display = 'none';
+                document.getElementById('age-input').style.display = 'none';
+                document.getElementById('name-input').style.display = 'none';0
+                // Display the result
+                document.getElementById('result').textContent = data.result;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+
+</body>
+</html>
